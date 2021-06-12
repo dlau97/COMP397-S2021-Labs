@@ -12,4 +12,8 @@ public class GameController : MonoBehaviour
             SceneManager.LoadScene("Main");
         }
     }
+
+    public void StartGame(){
+        SceneManager.LoadScene("Main");
+    }
 }
