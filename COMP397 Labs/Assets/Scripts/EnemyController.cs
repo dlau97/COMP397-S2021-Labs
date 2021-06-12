@@ -13,6 +13,7 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
+        playerT = GameObject.Find("Player").transform;
     }
 
     // Update is called once per frame
