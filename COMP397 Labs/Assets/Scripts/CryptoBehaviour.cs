@@ -9,7 +9,8 @@ public class CryptoBehaviour : MonoBehaviour
     {
         IDLE,
         RUN,
-        JUMP
+        JUMP,
+        KICK
     }
 
     [Header("Line of Sight")]
@@ -17,26 +18,45 @@ public class CryptoBehaviour : MonoBehaviour
     public GameObject player;
     private NavMeshAgent agent;
     private Animator animator;
+
+    [Header("Attack")]
+    public float attackDistance;
+    public PlayerBehaviour playerBehaviour;
+    public float damageDelay = 1f;
+    public bool isAttacking = false;
+    public float kickForce = 0.001f;
+    public float distanceToPlayer;
+
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        playerBehaviour = FindObjectOfType<PlayerBehaviour>();    
+        player = GameObject.Find("Player");
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-
+        
         if(HasLOS){
             agent.SetDestination(player.transform.position);
+            distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
 
-            if(Vector3.Distance(transform.position, player.transform.position) < 2.5f){
-                animator.SetInteger("AnimState", (int) CryptoState.IDLE); 
+            if(distanceToPlayer < attackDistance && !isAttacking){
+                animator.SetInteger("AnimState", (int) CryptoState.KICK); 
                 transform.LookAt(transform.position - player.transform.forward);
+                DoKickDamage();
+                isAttacking = true;
+                
+                if(agent.isOnOffMeshLink){
+                    animator.SetInteger("AnimState", (int) CryptoState.JUMP);
+                }     
             }
-            else{
+            else if(distanceToPlayer > attackDistance ){
                 animator.SetInteger("AnimState", (int) CryptoState.RUN); 
+                isAttacking = false;
             }
         }
         else{
@@ -52,6 +72,22 @@ public class CryptoBehaviour : MonoBehaviour
             HasLOS = true;
             player = other.transform.gameObject;
         }
+    }
+
+    private void DoKickDamage(){
+        //yield return new WaitForSeconds(damageDelay);
+        playerBehaviour.TakeDamage(20);
+
+        StartCoroutine(kickBack());
+
+
+    }
+
+    private IEnumerator kickBack(){
+        yield return new WaitForSeconds(0.5f);
+        var direction = Vector3.Normalize(player.transform.position - transform.position);
+        playerBehaviour.controller.SimpleMove(direction* kickForce);
+        StopCoroutine(kickBack());
     }
 
     // private void OnTriggerExit(Collider other) {
