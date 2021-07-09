@@ -32,20 +32,24 @@ public class ControlPanelController : MonoBehaviour
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.C)){
-            playerCamera.enabled = isOnScreen;
-            isOnScreen = !isOnScreen;
-            timer = 0.0f;
+            ToggleControlPanel();
         }
 
         if(isOnScreen){
             MoveControlPanelDown();
-            Cursor.lockState = CursorLockMode.None;
+            //Cursor.lockState = CursorLockMode.None;
             
         }
         else{
             MoveControlPanelUp();
-            Cursor.lockState = CursorLockMode.Locked;
+           // Cursor.lockState = CursorLockMode.Locked;
         }
+    }
+
+    void ToggleControlPanel(){
+        playerCamera.enabled = isOnScreen;
+        isOnScreen = !isOnScreen;
+        timer = 0.0f;
     }
     private void MoveControlPanelUp(){
         
@@ -67,5 +71,8 @@ public class ControlPanelController : MonoBehaviour
             timer += Time.deltaTime * speed;
         }
 
+    }
+    public void OnControlPanelButtonPressed(){
+        ToggleControlPanel();
     }
 }

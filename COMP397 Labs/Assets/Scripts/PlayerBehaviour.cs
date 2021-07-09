@@ -68,26 +68,33 @@ public class PlayerBehaviour : MonoBehaviour
         float x = joystick.Horizontal;
         float z = joystick.Vertical;
 
-        Debug.Log("Joystick.X" + x);
+        //Debug.Log("Joystick.X" + x);
 
         Vector3 move = transform.right * x + transform.forward * z;
 
         controller.Move(move * maxSpeed * Time.deltaTime);
 
-        if (Input.GetButton("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
-            jumpSounds.Play();
-        }
+        // if (Input.GetButton("Jump") && isGrounded)
+        // {
+        //     Jump();
+        // }
 
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
 
-        if(Input.GetKeyDown(KeyCode.M)){
-            // Toggle Minimap on and off
-            minimap.SetActive(!minimap.activeInHierarchy);
-        }
+        // if(Input.GetKeyDown(KeyCode.M)){
+        //     ToggleMiniMap();
+        // }
+    }
+    void Jump(){
+        velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
+        jumpSounds.Play();
+    }
+
+    void ToggleMiniMap(){
+        // Toggle Minimap on and off
+        minimap.SetActive(!minimap.activeInHierarchy);
     }
 
     void OnDrawGizmos()
@@ -106,5 +113,13 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-   
+   public void OnJumpButtonPressed(){
+       if(isGrounded){
+           Jump();
+       }
+   }
+
+   public void OnMapButtonPressed(){
+       minimap.SetActive(!minimap.activeInHierarchy);
+   }
 }
