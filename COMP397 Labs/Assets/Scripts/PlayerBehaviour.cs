@@ -4,9 +4,16 @@ using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    public CharacterController controller;
+    public CharacterController controller;    
+    
+    [Header("Controls")]
 
-    [Header("Control Properties")]
+    public Joystick joystick;
+
+    public float horizontalSensitivity;
+    public float verticalSensitivity;
+
+    [Header("Movement")]
 
     public float maxSpeed = 10.0f;
     public float gravity = -30.0f;
@@ -32,19 +39,13 @@ public class PlayerBehaviour : MonoBehaviour
     [Header("Player Abilities")]
     [Range(0, 100)]
     public int health = 100;
-    private float x,z;
 
-    public Camera playerCam;
-
-    private Vector3 m_touchesEnded;
 
     // Start is called before the first frame update
     void Start()
     {
         controller = GetComponent<CharacterController>();
         minimap.SetActive(false);
-        x = transform.position.x;
-        z = 0f;
     }
 
     // Update is called once per frame - once every 16.6666ms
@@ -64,30 +65,12 @@ public class PlayerBehaviour : MonoBehaviour
         //x = Input.GetAxis("Horizontal");
         //z = Input.GetAxis("Vertical");
 
-        float direction = 0.0f;
+        float x = joystick.Horizontal;
+        float z = joystick.Vertical;
 
-        foreach(var touch in Input.touches){
-            var worldTouch = playerCam.ScreenToWorldPoint(touch.position);
-            x = worldTouch.x;
-            //z = worldTouch.y;
-            
-            m_touchesEnded = worldTouch;
-            Debug.Log(m_touchesEnded);
+        Debug.Log("Joystick.X" + x);
 
-
-        }
-
-            if((x > transform.position.x)){ //move right
-                //direction positive
-                direction = 1f;
-            }
-            else if(x < transform.position.x){ //move left
-            //direction negative
-                direction = -1f;
-            }
-        //Debug.Log(direction);
-
-        Vector3 move = transform.right * x * direction;//+ transform.forward * z;
+        Vector3 move = transform.right * x + transform.forward * z;
 
         controller.Move(move * maxSpeed * Time.deltaTime);
 
