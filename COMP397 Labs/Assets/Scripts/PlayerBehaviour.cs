@@ -32,13 +32,19 @@ public class PlayerBehaviour : MonoBehaviour
     [Header("Player Abilities")]
     [Range(0, 100)]
     public int health = 100;
+    private float x,z;
 
+    public Camera playerCam;
+
+    private Vector3 m_touchesEnded;
 
     // Start is called before the first frame update
     void Start()
     {
         controller = GetComponent<CharacterController>();
         minimap.SetActive(false);
+        x = transform.position.x;
+        z = 0f;
     }
 
     // Update is called once per frame - once every 16.6666ms
@@ -52,10 +58,36 @@ public class PlayerBehaviour : MonoBehaviour
         //    velocity.y = -2.0f;
         // }
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        //Input for WEBGL and Desktop
+        //x = Input.GetAxis("Horizontal");
+        //z = Input.GetAxis("Vertical");
+
+        float direction = 0.0f;
+
+        foreach(var touch in Input.touches){
+            var worldTouch = playerCam.ScreenToWorldPoint(touch.position);
+            x = worldTouch.x;
+            //z = worldTouch.y;
+            
+            m_touchesEnded = worldTouch;
+            Debug.Log(m_touchesEnded);
+
+
+        }
+
+            if((x > transform.position.x)){ //move right
+                //direction positive
+                direction = 1f;
+            }
+            else if(x < transform.position.x){ //move left
+            //direction negative
+                direction = -1f;
+            }
+        //Debug.Log(direction);
+
+        Vector3 move = transform.right * x * direction;//+ transform.forward * z;
 
         controller.Move(move * maxSpeed * Time.deltaTime);
 
