@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ControlPanelController : MonoBehaviour
 {
@@ -13,14 +14,23 @@ public class ControlPanelController : MonoBehaviour
     public float timer = 0.0f;
     public bool isOnScreen = false;
 
+    [Header("Player Settings")]
+    public PlayerBehaviour  player;
+
     public CameraController playerCamera;
 
     public Pausable pausable;
+
+    [Header("Scene Data")]
+    public SceneDataSO sceneData;
+
+    public  GameObject gameStatePanel;
 
     // Start is called before the first frame update
     void Start()
     {
         pausable = FindObjectOfType<Pausable>();
+        player = FindObjectOfType<PlayerBehaviour>();
         playerCamera = FindObjectOfType<CameraController>();
         rectTransform = GetComponent<RectTransform>();
 
@@ -44,6 +54,10 @@ public class ControlPanelController : MonoBehaviour
             MoveControlPanelUp();
            // Cursor.lockState = CursorLockMode.Locked;
         }
+
+        
+        gameStatePanel.SetActive(pausable.isGamePaused);
+        
     }
 
     void ToggleControlPanel(){
@@ -74,5 +88,19 @@ public class ControlPanelController : MonoBehaviour
     }
     public void OnControlPanelButtonPressed(){
         ToggleControlPanel();
+    }
+
+    public void OnLoadButtonPressed(){
+        player.controller.enabled = false;
+        player.transform.position = sceneData.playerPosition;
+        player.controller.enabled = enabled;
+
+        player.health = sceneData.health;
+        player.healthBar.SetHealth(sceneData.health);
+    }
+
+    public void OnSaveButtonPressed(){
+        sceneData.playerPosition = player.transform.position;
+        sceneData.health = player.health;
     }
 }
